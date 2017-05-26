@@ -96,7 +96,6 @@ void convolveGradient(unsigned char inImg[MAXROWS][MAXCOLS],long rows, long cols
 
 			  //get the kernel1 value
               int kval2 = kernel2[krow][kcol];
-			  
               int krowoffset = krow -1;
               int kcoloffset = kcol -1;
               int currow = row + krowoffset;
@@ -106,8 +105,8 @@ void convolveGradient(unsigned char inImg[MAXROWS][MAXCOLS],long rows, long cols
               curcol = curcol < 0? 0 :curcol;
               currow = currow > rows -1 ? rows -1 :currow;
               curcol = curcol > cols - 1? cols - 1:curcol;
-              acc1 += (inImg[currow][curcol])*kval1;
-			  acc2 += (inImg[currow][curcol])*kval2;
+              acc1 += (inImg[currow][curcol])*0.25*kval1;
+              acc2 += (inImg[currow][curcol])*0.25*kval2;
               //acc += (inImg[currow][curcol]/2)*kval;
             }
           }
@@ -117,3 +116,14 @@ void convolveGradient(unsigned char inImg[MAXROWS][MAXCOLS],long rows, long cols
   }
 
 }
+
+
+void houghTransform(unsigned char edgeImg[MAXROWS][MAXCOLS], long rows, long cols, int gradThreshold){
+  int row,col;
+  for(row = 0; row<rows; row++){
+    for(col = 0; col<cols; col++){
+      
+    }
+  }
+}
+

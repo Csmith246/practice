@@ -18,8 +18,10 @@ void main (){
     long rows,cols;                         /* dimensions of the pixmap */
     unsigned char image[MAXROWS][MAXCOLS];  /* 2D array to hold the image */
 
-    unsigned char xsobel[MAXROWS][MAXCOLS];
-    unsigned char ysobel[MAXROWS][MAXCOLS];
+//    unsigned char xsobel[MAXROWS][MAXCOLS];
+//    unsigned char ysobel[MAXROWS][MAXCOLS];
+    unsigned char gradOut[MAXROWS][MAXCOLS];
+
     char userInput[60];                     /* input from user */
     int readOK,loopCondition,request;       /* two flags and user's request */
     int writeOK;                           /* flag for successful write */
@@ -30,7 +32,7 @@ void main (){
     readOK = pgmRead (userInput,&rows,&cols,image);
 
     // printf("there are %lu rows and %lu cols\n",rows,cols);
-     int row, col;
+    int row, col;
     // for (row = 0; row < rows; row++){
     //   for (col = 0; col < cols; col++) {
     //       printf("%u ",image[row][col]);
@@ -48,6 +50,7 @@ void main (){
     //fill the ysobel matrix with the convolution
     // of the y sobel Kernel
     ////convolve(image,rows,cols,ysobel,sobelYkernel);
+    convolveGradient(image,rows,cols,gradOut,sobelXkernel,sobelYkernel);
 
 
     // for (row = 0; row < rows; row++){
@@ -60,5 +63,6 @@ void main (){
    //write the two files
    ////pgmWrite("xsobel.pgm",rows,cols,xsobel,"test");
    ////pgmWrite("ysobel.pgm",rows,cols,ysobel,"test");
+   pgmWrite("gradOut.pgm",rows,cols,gradOut,"test");
 
 }
