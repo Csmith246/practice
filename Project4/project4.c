@@ -13,8 +13,9 @@ based initially on demopgm.c  by Richard Zanibbi (May 1998) for
 #include "p4utils.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <omp.h>
 
-void main (){
+void main (int argc, char *argv[]){
     long rows,cols;                         /* dimensions of the pixmap */
     unsigned char image[MAXROWS][MAXCOLS];  /* 2D array to hold the image */
 
@@ -26,20 +27,34 @@ void main (){
     int readOK,loopCondition,request;       /* two flags and user's request */
     int writeOK;                           /* flag for successful write */
     loopCondition = 1;                     /* set loop condition to "true" */
+	
+	double  start, stop, elapsed;  // variables to get time of convolveGradient
 
+    int nthreads = 1;
+	
+	if (argc != 2){
+      printf("usage: project4 <threadNum>\n ");
+      exit(1);
+    }else{
+	  nthreads = strtol(argv[1],NULL,10);
+	}
+
+
+	
     printf ("input filename:\n"); /*  and manipulate it. */
     scanf ("%s",userInput);
     readOK = pgmRead (userInput,&rows,&cols,image);
 
     // printf("there are %lu rows and %lu cols\n",rows,cols);
     int row, col;
-    // for (row = 0; row < rows; row++){
-    //   for (col = 0; col < cols; col++) {
-    //       printf("%u ",image[row][col]);
-    //   }
-    //   printf("\n");
-    // }
-
+/*     for (row = 0; row < rows; row++){
+       for (col = 0; col < cols; col++) {
+           if(image[row][col]>200)
+			   printf("%u ",image[row][col]);
+       }
+       printf("\n");
+     }
+*/
 
     int sobelXkernel[3][3] = {{-1, 0, 1},{-2, 0, 2},{-1, 0,1}};
     int sobelYkernel[3][3] = {{-1, -2, -1},{0, 0, 0},{1, 2, 1}};
@@ -50,9 +65,18 @@ void main (){
     //fill the ysobel matrix with the convolution
     // of the y sobel Kernel
     ////convolve(image,rows,cols,ysobel,sobelYkernel);
-    convolveGradient(image,rows,cols,gradOut,sobelXkernel,sobelYkernel);
-
-
+	
+	
+	
+ // code for part 1	
+//	start = omp_get_wtime(); // get time before operation	
+    convolveGradient(image,rows,cols,gradOut,sobelXkernel,sobelYkernel,nthreads);
+//	stop = omp_get_wtime(); // get time after operation
+//    elapsed = stop - start;
+//	printf("Time taken for convolveGradient: %lf\n",elapsed);
+	
+	houghTransform(gradOut, rows, cols, 200);
+	
     // for (row = 0; row < rows; row++){
     //   for (col = 0; col < cols; col++) {
     //       printf("%u ",ysobel[row][col]);
