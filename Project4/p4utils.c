@@ -6,6 +6,7 @@ project 4 utilities
 #include "p4utils.h"
 #include <math.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #define PI 3.14159265
 
@@ -125,45 +126,95 @@ void convolveGradient(unsigned char inImg[MAXROWS][MAXCOLS],long rows, long cols
 }
 
 
-unsigned char* houghTransform(unsigned char edgeImg[MAXROWS][MAXCOLS], long rows, long cols, int gradThreshold){
-  printf("rows = :%ld\ncols = :%ld\n", rows,cols);
+void houghTransform(unsigned char edgeImg[MAXROWS][MAXCOLS], long rows, long cols, int gradThreshold){
 
+  printf("rows = :%ld\ncols = :%ld\n", rows,cols);
   int row,col;
   int sizeofbins = 20;
-  unsigned long binnedResult [sizeofbins][sizeofbins]; // rBin x thetaBin
+  unsigned int binnedResult[sizeofbins][sizeofbins]; // rBin x thetaBin
+
+//Initialize BinnedResult Array to 0s
+  int a,b;
+  for(a=0; a<sizeofbins; a++){
+    for(b=0; b<sizeofbins; b++){
+      binnedResult[a][b]=0;
+      printf("%d ",binnedResult[a][b]);
+    }
+    printf("\n");
+  }
+
+
   double MaxR = hypot((double)rows,(double)cols);
   printf("maxR = :%lf\n", MaxR);
   for(row = 0; row<rows; row++){
     for(col = 0; col<cols; col++){
       if(edgeImg[row][col] > gradThreshold){ // if gradientVal at [row][col] is greater than gradThreshold
-		  double angle;
-		  for(angle = 0; angle<PI; angle=angle+(PI/20)){//angle<=PI?
-			  double R = row*cos(angle) + col*sin(angle);
+		  double angle = 0;
+		  double increment = PI/20.0;
+		  int count=0;
+		  while(count<sizeofbins){
+                          printf("angle = :%lf\n", angle);
+			  printf("count = %d\n", count);
+			  count++;
+			  double R = ((double)col)*cos(angle) + ((double)row)*sin(angle);
+                          printf("R = :%lf\n", R);
 			  double rRatio = R/MaxR;
-			  int rBin = (int)floor(rRatio*sizeofbins);
-			  double thetaRatio = angle/PI;
-			  int thetaBin = (int)floor(thetaRatio*sizeofbins);
-			  binnedResult[rBin][thetaBin] =+ 1;
+                          printf("rRatio = :%lf\n", rRatio);
+			  int rBin = abs((int)ceil(rRatio*((double)sizeofbins)));
+                          printf("rbin = :%d\n", rBin);
+			 // double thetaRatio = angle/PI;
+			 // int thetaBin = abs((int)floor(thetaRatio*((double)sizeofbins)));
+			  binnedResult[rBin][count] = binnedResult[rBin][count] + 1;
+			  angle = angle + increment;
 		  }
 	  }
     }
   }
-  
-  //IDEA FOR TOMORROW:::: tRY TAKING THE HIGHEST SCORING BIN AND DRAW THAT AND SEE WHERE IT IS DRAWN..... STILL THO I THINK SOMETHING MAY BE SLIGHTLY WRONG
-  // BECAUSE THE RADII FOR THE LOCATIONS OF THE HORIZONTAL LINES DON'T SEEM TO BE THERE. BUT YEA, TAKE THE BIN WITH THE MOST HITS AND DRAW A LINE AND SEE WHAT HAPPENS
-  // CAUSE IT MIGHT BE RIGHT.....
-  
+
+
+
+
+
   int x,y;
+  int binx,biny;
+  unsigned int tempmax=0;
+// Find the most voted bin cell
   for(x=0; x<sizeofbins; x++){
-	  for(y=0; y<sizeofbins; y++){
-		  if (binnedResult[x][y]>300000){
-		     printf("%u ", binnedResult[x][y]);
-		  }else{
-			  printf("0 ");
-		  }
-	  }
+    for(y=0; y<sizeofbins; y++){
+      unsigned int cellVal = binnedResult[x][y];
+      if(cellVal>tempmax){
+        tempmax = cellVal;
+        binx = x;
+        biny = y;
+      }
+      printf("%d ", binnedResult[x][y]);
+    }
 	  printf("\n");
   }
-  
+  printf("binx = %d, biny = %d, val = %d\n",binx,biny,tempmax);
+
+
+  double finalR = (((double)binx))*(MaxR/20);
+//  double finalR = 400;
+  double finalTheta = (((double)biny)-1)*(PI/20);
+//  double finalTheta = PI/2;
+  unsigned char newVal = 255;
+
+  printf("r = %lf, theta = %lf\n",finalR,finalTheta);
+
+
+  int nRow, nCol;
+  double nRowTemp = 0;
+//draw new line on the graph
+  for(nCol = 0; nCol<cols; nCol++){
+    double temp1 = (-(cos(finalTheta)/sin(finalTheta))*(double)nCol);
+    double temp2=  (finalR/sin(finalTheta));
+//    printf("temp1=%lf , tmep2 = %lf\n",temp1, temp2);
+   nRowTemp = temp1+temp2;
+    nRow = floor(nRowTemp);
+    edgeImg[nRow][nCol] = newVal;
+  }
+
+
 }
 

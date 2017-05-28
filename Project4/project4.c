@@ -74,9 +74,9 @@ void main (int argc, char *argv[]){
 //	stop = omp_get_wtime(); // get time after operation
 //    elapsed = stop - start;
 //	printf("Time taken for convolveGradient: %lf\n",elapsed);
-	
-	houghTransform(gradOut, rows, cols, 200);
-	
+    int gradThres = 150;
+    houghTransform(gradOut, rows, cols, gradThres);
+
     // for (row = 0; row < rows; row++){
     //   for (col = 0; col < cols; col++) {
     //       printf("%u ",ysobel[row][col]);
