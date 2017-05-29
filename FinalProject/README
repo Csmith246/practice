@@ -1,0 +1,28 @@
+To compile:
+
+	$ make
+
+To run:
+	
+	copy to a directory in your path
+	$ checkers
+
+
+About this program:
+
+This program is still very young. This is a game I wrote for an "AI in Game Design" course I took at college. It is a fair game, but incomplete. 
+Being written in a very short time, it is coded fairly slopily and lacks certain features of a checkers game - like multiple jumps. The AI is simple
+ but quite good for what it is. But, it is limited and it shows especially at endgame.
+
+The code is written in C and is built on the curses library. To build, just run 'make' and the executable is 'checkers'. This should build on all UNIX-like systems.
+
+
+TODO
+
+	* clean up the code base!
+	* implement all game rules - i.e. multiple jumps
+	* switch from a curses interface to just a console interface 
+	  (will make it easier to serve as a backend for a GUI frontend)
+	* write a better AI heuristic
+	* add move databases
+
